@@ -316,13 +316,16 @@ a column, you can write `dataframe[,column#]` and you can use
 `dataframe[row#,]`.
 
 ```{r}
-
+Animal_Data[,2]
+Animal_Data[1,1]
+Animal_Data[4,2]
 ```
 
 You can also get columns by using a `$`.
 
 ```{r}
-
+Animal_Data$Animals
+Animal_Data$AnimalCookies
 ```
 
 #### Learning Outcome 3 Practice:
@@ -330,37 +333,38 @@ You can also get columns by using a `$`.
 1.  Create a variable that contains your favorite ice cream flavor
 
 ```{r}
-
+IceCreamFlvr<-"Chocolate"
 ```
 
 2.  Create two vectors: 1 vector should contain the names of four TV shows and the 2nd vector should contain your ratings for those shows
 
 ```{r}
-
+FavoriteTv <- c("Supernatrual", "Andor", "Severance", "Daredevil")
+FavTvRatings<- c(9, 10, 10, 7)
 ```
 
 3.  Make these vectors into a data frame.
 
 ```{r}
-
+Tv_Dataset <- cbind.data.frame(FavoriteTv, FavTvRatings)
 ```
 
 4.  Print the information in the 2nd row.
 
 ```{r}
-
+Tv_Dataset[2,]
 ```
 
 5.  Print the information in the 2nd column.
 
 ```{r}
-
+Tv_Dataset[,2]
 ```
 
 Bonus: Print the information in the 3rd row, 1st column.
 
 ```{r}
-
+Tv_Dataset[3,1]
 ```
 
 ###Learning Outcome 4: Explain how to obtain a subset of your data
