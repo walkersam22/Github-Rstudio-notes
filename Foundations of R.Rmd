@@ -217,24 +217,24 @@ seq(1, 100, by=5)
 1.  Print every 5th number between 1 and 100.
 
 ```{r}
-
+seq(1, 100, by=5)
 ```
 
 2.  Use code to write I love statistics 4 times.
 
 ```{r}
-
+rep("I love statistics", 4)
 ```
 
 3.  Repeat the numbers 1-10 twice
 
 ```{r}
-
+rep(seq(1, 10), 2)
 ```
 
 4.  Print every 3rd number from 1-20 3 times.
 ```{r}
-
+rep(seq(1, 20, by=3), 3)
 ```
 
 ###Learning Outcome 3: Explain the differences between variables, vectors, and dataframes
@@ -259,7 +259,8 @@ Naming conventions: I was taught to use all lower case for the first word, and c
 Variables store one thing in R (it can be a number, a word, or whatever you want)
 
 ```{r}
-
+fruit <- "blueberry"
+coffeeConsumed <- 0
 ```
 
 *Aside: `c()` means combine. you can put stuff in parentheses and use a comma to separate it and have it print together
@@ -273,39 +274,41 @@ function- `c()`.
 
 ```{r}
 "numeric"
+darkMatter <- c(0, 0, 1, 0, 1, 1, 0)
 "character"
-
+FirstNames <- c("Tori", "Varna", "Timothy", "Sam")
 ```
 
 If you want to call one of the things you saved in a vector, you can
 write `vectorName[position of thing]`
 
 ```{r}
-
+FirstNames[4]
 ```
 
 **Dataframes** Data frames are made from multiple vectors. There are preloaded datasets in R we can use to practice, such as mtcars:
 
 ```{r}
-
+data("mtcars")
+#View(dataset)
 ```
 
 ### Practice: 
 
 1)Make a vector with 6 animals
 ```{r}
-
+Animals <- c("Horse", "Cow", "Pig", "Chicken", "Dog", "Cat")
 ```
 2)Make a vector of the number of cookies you think each animal could eat
 ```{r}
-
+AnimalCookies <- c(101, 120, 304, 6, 10, 0)
 ```
 
 We can also combine vectors into a dataframe using R functions
 (`cbind.data.frame()` or `rbind.data.frame()`). We'll use the vectors we made above as an example.
 
 ```{r}
-
+Animal_Data <- cbind.data.frame(Animals, AnimalCookies)
 ```
 
 Just like you can pick one thing in a vector, you can select one column or one row in a dataframe. You can use brackets like we did with vectors, but you need to specify whether it's a row or a column. If it's
@@ -313,7 +316,6 @@ a column, you can write `dataframe[,column#]` and you can use
 `dataframe[row#,]`.
 
 ```{r}
-
 
 ```
 
