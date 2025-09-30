@@ -37,7 +37,7 @@ colnames(penguins)[2]
 colnames(penguins)[3]<- "BillLengthMm"
 colnames(penguins)[4:6]<- c("BillDepthMm", "FlipperLengthMm", "BodyMassG")
 colnames(penguins)
-toupper("hee hee)
+DataFunctionDivide(Score)toupper("hee hee)
 tolower("WHY ARE YOU YELLING")
 ```
 
@@ -191,47 +191,55 @@ mtcars
 Before we make the function, we'll make a vector of numbers (1-10) as our input
 
 ```{r}
-
+OneToTen<- 1:10
 ```
 
 then, we'll name our function addTwo and give it one argument or input
 
 ```{r}
-
+addTwo<- function(number){
+  number + 2
+}
 ```
 if we run this correctly, it should show up in the environment (top right). 
 
 Then, we can use our function to add two to our vector:
 
 ```{r}
-
+addTwo(7)
+addTwo(OneToTen)
 ```
 
 One thing to note- anything you make in a function **stays in the function.** If you want to save it to a dataframe, you treat your new function just like any other R function (i.e. you need to assign the output to a column or variable)
 
 ```{r}
 "dataframe$column <- function"
-
+OnePlusTwo<-addTwo(OneToTen)
 ```
 
 ## Practice:
 function to multiply by 7
 ```{r}
-
+BySeven<- function(number){
+  number * 7
+}
 ```
 test it out
 ```{r}
-
+BySeven(8)
+BySeven(OneToTen)
 ```
-
+#Functions with characters
 **my favorite is**
 `paste()`
 ```{r}
-
+MyFavorite<- function(thing){
+  paste("My favorite food is", thing)
+}
 ```
 test
 ```{r}
-
+MyFavorite("dumplings")
 ```
 
 ### Multiple argument functions
@@ -239,29 +247,42 @@ test
 We can make functions with more than one argument. For instance we could multiply all of the numbers in our original vector by a second vector 10-1
 
 ```{r}
+tenToOne<- 10:1
 
+multipleBy<- function(number1, number2){
+  number1*number2
+}
+multipleBy(OneToTen, tenToOne)
+numberDat<- cbind.data.frame(OneToTen, tenToOne)
+numberDat$multiply<- multipleBy(OneToTen, tenToOne)
 ```
 
 ### Learning Outcome 3 Practice
 
 1. Make a function that divides numbers by 100. 
 ```{r}
-
+divideby<- function(number){
+  number/100
+}
+divideby(1000)
 ```
 
 2. Test your function on the mtcars mpg column.
 ```{r}
-
+data(mtcars)
+mtcars$mpgDivide10<-divideby(mtcars$mpg)
 ```
 
 3. Make a function that finds the mean of a column and divides it by the standard deviation of another column.
 ```{r}
-
+MeanDivideSd<-function(number1, number2){
+  mean(number1)/sd(number2)
+}
 ```
 
 4. Test it on the mpg column and hp column. 
 ```{r}
-
+mtcars$mpgDividehp<- MeanDivideSd(mtcars$mpg, mtcars$hp)
 ```
 
 ## Learning Outcome 4: Create your own for loop
@@ -272,12 +293,13 @@ Let's say we wanted to create a column in the chickweight dataset that indicated
 
 We'd have to make a new column
 ```{r}
-
-
+data("ChickWeight")
+summary(as.factor(ChickWeight$Time))
+ChickWeight$BeginEnd<- NA
 ```
 and then fill in that new column by indexing the days column, which has 12 different days. 
 ```{r}
-
+#see notes
 ```
 
 We could use a **for loop** though to go through each row of the data set and fill out the new column (beginning or end) based on the days in the Time column.
@@ -296,6 +318,9 @@ think we want to do
 }
 
 ```{r}
+for(i in 1:nrow(ChickWeight)){
+  ChickWeight$BeginEnd[i]<-ChickWeight$Time[i]>10
+}
 
 ```
 
@@ -303,7 +328,12 @@ think we want to do
 
 1. Create a for loop that will multiply each number in a vector by 4. Test it with a vector containing the numbers 10:100. 
 ```{r}
-
+VecNum<- 10:100
+number<-NA
+for(i in 1:length(VecNum)){
+  number[i]<-VecNum[i]*4
+}
+number
 ```
 
 2. Create a new column in the mtcars data set that indicated whether a car has good mileage (over 25 mpg) or bad mileage (25 mpg or fewer).  
