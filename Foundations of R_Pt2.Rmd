@@ -338,6 +338,11 @@ number
 
 2. Create a new column in the mtcars data set that indicated whether a car has good mileage (over 25 mpg) or bad mileage (25 mpg or fewer).  
 ```{r}
+#nrow is for a dataset, length is for lists, column, or vector
+mtcars$mpgAbove25<-NA
+for (i in 1:nrow(mtcars)){
+  mtcars$mpgAbove25[i]<-mtcars$mpg[i]>25
+}
 
 ```
 
@@ -352,13 +357,26 @@ if(condition){
 what you want to happen 
 }
 
-Let's try one: in this case, we'll make an if statement to milage
+Let's try one: in this case, we'll make an if statement to mileage
 ```{r}
-
+data(mtcars)
+mtcars$above25<-NA
+for(i in 1:nrow(mtcars)){
+  if(mtcars$mpg[i]>25){
+  mtcars$above25[i]<- "good mileage"
+  }
+}
 ```
+
+```{r}
+`
 ### else statement
 ```{r}
-
+for(i in 1:nrow(mtcars)){
+  if(mtcars$mpg[i]>25){
+    mtcars$above25[i]<- "good mileage"
+  } else{mtcars$above25[i]<- "bad mileage"}
+  
 ```
 
 ### bringing it all together
@@ -373,6 +391,7 @@ R lets you combine if/else statements into a single function, ifelse().
 We can use this to accomplish the same thing we did above:
 ```{r}
 #ifelse(condition, what happens if it's true, what happesn if it's false)
+mtcars$above25pt2<-ifelse(mtcars$mpg>25,"good mileage","bad mileage")
 
 ```
 
@@ -380,6 +399,13 @@ We can use this to accomplish the same thing we did above:
 
 1. Make an if statement to determine if the weight of a chick on a given day is greater than 100 grams.  (i.e. is the weight in each row greater than 100 )
 ```{r}
+data("ChickWeight")
+for (i in 1:nrow(ChickWeight)){
+ if(ChickWeight$weight[i]>100){
+    ChickWeight$ChickWeightMass[i]<-"yes"
+  } else{ChickWeight$ChickWeightMass[i]<-"no"}
+}
+#this is a correct for loop
 
 ```
 for(){
@@ -389,5 +415,6 @@ for(){
 }
 2. create a new column in the mtcars data set to indicate whether a car has a manual or automatic transmission. 
 ```{r}
-
+mtcars$transmission<-NA
+mtcars$transmission<- ifelse(mtcars$am==0, "automatic", "manual")
 ```
