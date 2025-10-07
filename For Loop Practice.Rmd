@@ -1,0 +1,29 @@
+---
+title: "For Loop Practice"
+author: "Samantha Walker"
+date: "2025-10-07"
+output: html_document
+---
+
+```{r}
+##Bonus for loop
+#based ont he island the penquin are on, fill in a column that tells us whos favorite it is 
+#Tejiri = dream
+#Sawyer = Biscoe
+#Rachel = Torgersen
+data("penguins")
+penguins$island
+penguins$StudentFavorite <- NA
+for(i in 1:nrow(penguins)){
+  if(penguins$island[i]=="Dream"){
+    penguins$StudentFavorite[i]<-"Tejiri"
+  }
+  if(penguins$island[i]=="Biscoe"){
+    penguins$StudentFavorite[i]<-"Sawyer"
+  }
+  if(penguins$island[i]=="Torgersen"){
+    penguins$StudentFavorite[i]<-"Rachel"}
+  }
+
+```
+
