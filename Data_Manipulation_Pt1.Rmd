@@ -22,7 +22,7 @@ You'll want to press the "import dataset" button above your global environment. 
 Once you press okay, you'll see your dataset pop up in the console below. You should move it to your .Rmd file and name it however you'd like. I have a tendency to use "dat", though it's not the most informative. Feel free to use your own name, but remember that whatever you call it here is how you'll refer to it for the rest of the lesson. 
 
 ```{r}
-AgressionDat <- read.csv("~/Github-Rstudio-notes/PSY4802-AggressionSampleData.csv")
+AggressionDat <- read.csv("~/Github-Rstudio-notes/PSY4802-AggressionSampleData.csv")
 #reading in data set code
 
 ```
@@ -37,7 +37,7 @@ There are many **many** ways to transform data from wide to long and vice versa.
 
 We also need to determine what type of data we have. To make sure we're all on the same page, a quick review: 
 **Long data:** have multiple rows per participants. Each row represents a unique measurement. (in our example, each participant would have two rows: the baseline measure and the measure after the game). 
-**Wide data:** There is only one row per participant. Each colum represents a unique measurement. (in our example, the data is currently in wide format).
+**Wide data:** There is only one row per participant. Each column represents a unique measurement. (in our example, the data is currently in wide format).
 
 Knowing the type of data you are using and how to change it is important because you may need to change it depending on the analyses you'd like to run and how you'd like to graph the data.  
 
@@ -47,6 +47,8 @@ As mentioned above, the current data are in wide format. We can change this to l
 **pivot_longer**
 I think this is the easiest version to use. We'll need to use the "tidyverse" library. 
 ```{r}
+library(tidyverse)
+#make the parts of the data that deal with the research question long, not the demographic infomation
 
 ```
 `pivot_longer()` uses the following structure: 
@@ -54,7 +56,7 @@ I think this is the easiest version to use. We'll need to use the "tidyverse" li
 names_to: specifies what you'd like to call the column that contains the previous column names
 values_to: specifies the name of the column where the scores go
 ```{r}
-
+AgressionLongDat<- pivot_longer(AgressionDat, col=c("baselineAggression", "postAggression"),names_to="timePoint", values_to = "agressionScore")
 ```
 **Note:** remember to save the data to your environment. 
 
@@ -62,12 +64,13 @@ values_to: specifies the name of the column where the scores go
 1. Open the relig_income dataset.
 
 ```{r}
-
+data("relig_income")
 ```
 
 2. Restructure the dataset so that it is in long format. 
 ```{r}
-
+IncomeLongData <-pivot_longer(relig_income, col=c("<$10k", "$10-20k", "$20-30k", "$30-40k", "$40-50k", "$50-75k", "$75-100k", "$100-150k", ">150k", "Don't know/refused"), names_to="IncomeAmount", values_to ="Total Individuals")
+#use cols(2:10) instead of listing all the names 
 ```
 
 **gather** 
@@ -77,13 +80,15 @@ key- what you'd like the column containing old column names to be called
 value- what you'd like the scores column to be called
 
 ```{r}
-
+longDat2<- gather(AggressionDat, key = "TimePoint", value = "aggressionScore", c("baselineAggression", "postAggression"))
 ```
 
 **melt**
 `melt()` is a function in the reshape2 library. It's another way to create long data
 ```{r}
-
+install.packages("reshape2")
+library(reshape2)
+longdat3<- melt(AggressionDat, id.vars= c("subjNo", "ageGroup", "parentReportGender", "condition"), measure.vars = c("baselineAgression", "postAgression"), variable.name="timepoint", value.name = )
 ```
 `melt()` uses the following arguments: 
 `melt(dataframe, id.vars, measure.vars, variable.name, value.name)`
