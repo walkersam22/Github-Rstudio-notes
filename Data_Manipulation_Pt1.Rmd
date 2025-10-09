@@ -56,7 +56,7 @@ library(tidyverse)
 names_to: specifies what you'd like to call the column that contains the previous column names
 values_to: specifies the name of the column where the scores go
 ```{r}
-AgressionLongDat<- pivot_longer(AgressionDat, col=c("baselineAggression", "postAggression"),names_to="timePoint", values_to = "agressionScore")
+AgressionLongDat<- pivot_longer(AggressionDat, col=c("baselineAggression", "postAggression"),names_to="timePoint", values_to = "agressionScore")
 ```
 **Note:** remember to save the data to your environment. 
 
@@ -100,11 +100,16 @@ longdat3<- melt(AggressionDat, id.vars= c("subjNo", "ageGroup", "parentReportGen
 
 1. open the billboard dataset. 
 ```{r}
-
-```
+data("billboard")
+````
 2. convert it from wide to long format. 
 ```{r}
-
+BillboardLongData <-pivot_longer(billboard, col=c(4:79), names_to="Week Number", values_to ="Weeks")
+#find column positions
+colnames(billboard)
+##can use pipes
+LongBill<-billboard %>% pivot_longer(col=4:79, names_to = "week", values_to="score")%>%
+  summarize (mean=mean(score, na.rm=TRUE))
 ```
 
 ### Learning Outcome 2: Transform data from long to wide
@@ -114,7 +119,7 @@ As above, we'll restructure the data in three ways. Again, some ways are more in
 The pair function for pivot_longer. It has the following arguments: 
 `pivot_wider(dataset, id columns, names_from, values_from)`
 ```{r}
-
+AggressionWide<-pivot_wider(AgressionLongDat, id_cols = c("subjNo", "ageGroup", "parentReportGender", "condition"), names_from = "timePoint", values_from="agressionScore")
 ```
 
 **spread** 
@@ -122,7 +127,7 @@ is the pair function for gather. It has the following arguments:
 `spread(data, key, value, columns to make wide)`
 key = timepoint; value = aggression score
 ```{r}
-
+wideDat2<- spread(longDat2, key ="TimePoint", value="aggressionScore")
 ```
 
 **dcast**
@@ -130,7 +135,10 @@ cast functions are the pairs to melt. `dcast()` specifically is used for datafra
 dcast has the following arguments: 
 `dcast(data, formula)`
 ```{r}
+library(reshape2)
 #datWide3<- dcast(aggressionLong3, formula= subjNo+ ageGroup+parentReportGender+condition~variable name)
+datwide3<- dcast(AgressionLongDat, forumla= subjNo + ageGroup + parentReportGender, agressionScore~timePoint)
+##will never use this tbh cause not sure if this is correct
 
 ```
 **Note:** dcast is really not intuitive. I pretty much determine the correct order through trial and error every time. 
@@ -138,17 +146,20 @@ dcast has the following arguments:
 #### Learning Outcome 2: Practice
 1. Open the ChickWeight dataset.
 ```{r}
-
+data("ChickWeight")
 ```
 
 2. Convert it from long to wide format. 
 ```{r}
-
+ChickweightWide<- pivot_wider(ChickWeight, id_cols = c("Diet", "Chick"), names_from = "Time", values_from="weight")
 ```
 
 3. Convert from wide to long. 
 ```{r}
-
+ChickweightLong<- pivot_longer(ChickweightWide, cols = c(3:14), names_to = "Time", values_to = "weight")
+colnames(ChickweightWide)
+ChickweightLong2<-na.omit(ChickweightLong)
+#is.na will help you remove blank data
 ```
 
 
@@ -176,16 +187,23 @@ you can use some of the commands we've already used in a different structure
 
 1) open sleep data set
 ```{r}
-
+data(sleep)
 ```
 
 2) identify the type of data
+```{r}
+#this is in long format
+```
 
 3) change it to the other type
+```{r}
+sleepWide<- pivot_wider(sleep, id_cols = "ID", names_from = "group", values_from = "extra")
+```
 
 4) Go back to the chick weight dataset and take all data from chick 3 and put it in wide format 
 ```{r}
 
+Chick3<-ChickWeight %>% filter(Chick==3)%>% pivot_wider(Chick3, id_cols = c("Diet", "Chick"), names_from = "Time", values_from="weight")
 ```
 
 ### Learning Outcome 3: Join data sets in R
