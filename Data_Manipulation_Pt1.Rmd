@@ -209,26 +209,35 @@ Chick3<-ChickWeight %>% filter(Chick==3)%>% pivot_wider(Chick3, id_cols = c("Die
 ### Learning Outcome 3: Join data sets in R
 Some times, we have datasets that we need to join or merge (e.g. participant demographics in one file and responses in a second). We can combine these datasets using "join." If you've ever used/heard of SQL, join works the same way in R
 
-We'll practice on the following code: 
+We'll practice on the following code:
 Make a data frame with subject number and simulated anxiety scores
 ```{r}
-
+#Hamilton Anxiety Score: 0; <17 mide, 18-24 mild/moderate, 25-30  moderate/severe, 20-56 severe
+simulatedAnxietyScore<- sample(size=48, x=0:56, replace=TRUE)
+simulatedAnxietyScore
+AnxietyDat<-data.frame(subjNo=AggressionDat$subjNo, simulatedAnxietyScore)
 ```
 use `left_join()`
 ```{r}
-
+anxietyAggressionDat<-left_join(AggressionDat, AnxietyDat)
 ```
 
 `right_join()` does the same thing, but places the new column to the right. 
+#does the same thing, but starts on the right
 
 #### Learning Outcome 3 Practice
 1. Create a dataframe (n=48) that includes subject numbers and executive function scores (ranging from 0-16).
 ```{r}
+simulatedExecutiveFunction<- sample(size=48, x=0:16, replace = TRUE)
 
+executiveAggreessionDat<-left_join(AggressionDat, ExecutiveDat)
 ```
 
 2. Join your dataset in #1 to the original Aggression dataset. 
 ```{r}
+ExecutiveDat<-data.frame(subjNo=AggressionDat$subjNo, simulatedExecutiveFunction)
+#
+executiveAggreessionDat<-left_join(AggressionDat, ExecutiveDat)
 
 ```
 
@@ -242,7 +251,9 @@ As we talked about before, there are different classes(or types) of data in R. F
 Let's take the example from our final dataset (datFinal). We can change parentReportGender to have levels of "boy" and "girl."
 we'll check what class it is first
 ```{r}
-
+class(AggressionDat$parentReportGender)
+AggressionDat$parentReportGenderTwo<-as.factor(AggressionDat$parentReportGender)
+is.factor(AggressionDat$parentReportGenderTwo)
 ```
 it's currently a character, so we can change it to a factor using as.factor (which we talked about last week). Then, we can use the function `levels()` to change the data. 
 
@@ -251,6 +262,13 @@ Note: because I saved these as different columns, I can directly compare the dat
 Also, keep in mind that changing levels of a factor requires you to know **know what levels are currently in your data.** You can check this by either printing the column as I've done above, or using the levels command:
 `factor(data, levels = x,y,z)`
 ```{r}
+levels(AggressionDat$parentReportGenderTwo)<-c("girl", "boy")
+levels(AggressionDat$parentReportGenderTwo)
+
+AggressionDat$parentReportGender3
+AggressionDat$parentReportGenderThree<-
+  factor(AggressionDat$parentReportGender, levels=c("F", "M"), label=c("girl", "boy")
+AggressionDat$
 
 ```
 I'd recommend this version, particularly if you have a large data set. 
@@ -258,24 +276,29 @@ I'd recommend this version, particularly if you have a large data set.
 #### Practice: 
 1. Create a column in the final dataset that contains condition as a factor. 
 ```{r}
-
+AggressionDat$ConditionFactor<- as.factor(AggressionDat$condition)
+is.factor(AggressionDat$ConditionFactor)
 ```
 
 2. Change the levels to "e" for exclusion and "i" for inclusion. 
 ```{r}
+levels(AggressionDat$ConditionFactor)<-c("e", "i")
+AggressionDat %>% select(condition, ConditionFactor)
 
 ```
 
 3. Check that you have done this successfully. 
 ```{r}
-
+levels(AggressionDat$ConditionFactor)
 ```
 
 **reordering factors**
 You may have noticed that writes levels of a factor in alphabetical order. Sometimes, this is really helpful. Other times, it can complicate statistical models and graphs because there are more meaningful ways to reorder your data. You can reorder the data using relevel. 
 It has the general structure `relevel(column, reference level)`
 ```{r}
-
+AggressionDat$ConditionFactor<-relevel(AggressionDat$ConditionFactor, ref = "i")
+#this just changes the order of the level because it is set up alphabetically automatically
+AggressionDat$ConditionFactor
 ```
 If you have more levels, you can specify the order in your factor function 
 
@@ -293,13 +316,15 @@ For those of you who have survey data, you may be interested in using a function
 
 I'm going to make a new column to demonstrate this.
 ```{r}
-
+install.packages("car")
+library(car)
+testOutcome2<-c(rep("strongly agree", 5), rep("agree", 5), rep("disagree", 5), rep("strongly disagree", 5))
 ```
 To reverse code it, we would write
 `recode(data, 'how to recode')`
 There is also a recode in the car package
 ```{r}
-
+car::recode(testOutcome2,"'strongly agree'=4; 'agree'=3; 'disagree'=2;'strongly disagree'=1")
 ```
 Note: you'll notice that I wrote "car::" before the record function. This is necessary sometimes. Remember, the libraries are made by **different** people. People use the same words for different functions. So we need to tell R which of the functions we want to use. 
 
@@ -309,7 +334,7 @@ separate uses the following arguments:
 `separate(data, columns, into, sep)`
 let's look at the subject column in our dataset
 ```{r}
-
+separate(AggressionDat, subjNo, into=c("conditionMarker", "subjNo"), sep=1)
 ```
 
 **Mutate** 
@@ -317,7 +342,8 @@ When you are cleaning data, there are occasionally instances where you need to u
 
 To practice using Mutate, we're going to use a messier dataset
 ```{r}
-
+data(starwars)
+starwars 
 ```
 
 If you open the dataset, you can see that we have both height and mass variables. You can see that height is in cm, so we can convert height to meters
