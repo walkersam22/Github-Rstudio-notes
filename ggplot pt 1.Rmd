@@ -180,12 +180,9 @@ ggplot(priceByColor, aes(color, price))+geom_bar(stat="identity")
 **standard errors**
 Using this dataset also allows us to include standard error bars or confidence intervals in our plots. We do this by adding a layer called `geom_errorbar(aes(ymin, ymax))`. 
 ```{r}
-ggplot(priceByColor, aes(color, price))+geom_bar(stat="identity")+geom_errorbar(aes(ymin=price-se, ymax=price+se))+theme_classic)
-#not quite right
-
-```
-
-```{r}
+library(ggplot2)
+ggplot(priceByColor, aes(color, price))+geom_bar(stat="identity", fill="lightblue", alpha=.75)+geom_errorbar(aes(ymin=price-se, ymax=price+se, width=.5))+theme_classic()
+#adds standard error bars, changes the with, and the transparency
 
 ```
 
@@ -197,11 +194,16 @@ Things I included:
 
 **adding lines** (hline/vline)
 ```{r}
-
+library(ggplot2)
+ggplot(priceByColor, aes(color, price))+geom_bar(stat="identity", fill="lightblue", alpha=.75)+geom_errorbar(aes(ymin=price-se, ymax=price+se, width=.5))+theme_classic()+geom_hline(yintercept=mean(diamonds$price), size=1, limetype="dashed",color="purple")
+#adds a y-intercept at the mean
 ```
 
 ```{r}
-
+library(ggplot2)
+library(tidyverse)
+ggplot(priceByColor, aes(color, price))+geom_bar(stat="identity", fill="lightblue", alpha=.75)+geom_errorbar(aes(ymin=price-se, ymax=price+se, width=.5))+theme_classic()+geom_vline(xintercept=2, color="green")
+#adds a x-intercept at 2
 ```
 
 Things I changed: 
@@ -215,44 +217,64 @@ Things I changed:
 ### Practice: 
 1. Create a bar graph for the species column. 
 2. Change the x and y labels to something that is more informative. 
+```{r}
+ggplot(penguins, aes(species))+
+  geom_bar(color="black", fill="lightblue")+
+  theme_classic()
+```
+
+```{r}
+ggplot(penguins, aes(species))+
+  geom_bar(color="black", fill="lightblue")+
+  theme_classic()+
+  labs(title="Graph of Penguin Species", x="\nSpecies",y="\nFrequency")
+```
 
 ### Adding a second variable to a bar graph: 
 ```{r}
+ggplot(diamonds, aes(color, fill=cut))+geom_bar()+theme_classic()
+
+ggplot(diamonds, aes(color, fill=cut))+geom_bar(position = position_dodge())+theme_classic()
 
 ```
 
 ```{r}
-
+gglot(diamonds, aes(color, fill=price))+geom_bar()+theme_classic()
+data(mtcars)
+ggplot(mtcars, aes(cyl, fill=as.factor(mpg)))+geom_bar(position = position_dodge())
 ```
-
 
 **Scatter plot**
 We can make scatter plots using the argument `geom_point()`. We'll make a graph of carat by price. 
 ```{r}
-
+ggplot(diamonds, aes(carat, price))+geom_point(color="red", fill="lightblue")#fill doesn't work for scatterplots
 ```
 
 ```{r}
-
+ggplot(diamonds, aes(carat, price))+geom_point(color="lightblue", size=2, shape=4)
 ```
 
 ```{r}
-
+ggplot(mtcars, aes(cyl, gear))+geom_point()
+#forces the data points away from each other, only add this other graphs to get a sense of variablility 
 ```
 
 #jitter()
 ```{r}
-
+ggplot(mtcars, aes(cyl, gear))+geom_jitter()
+#forces the data points away from each other, only add this other graphs to get a sense of variablility 
 ```
 
 ### Practice
 - make a scatter plot of bill length and bill depth. 
 ```{r}
-
+ggplot(penguins, aes(bill_length_mm, bill_depth_mm))+geom_point()
 ```
 
 - modify the graph to include at least 2of the style elements we talked about
 ```{r}
+ggplot(penguins, aes(bill_length_mm, bill_depth_mm))+geom_point(color="darkblue", size=2, shape=17)
+ggplot(penguins, aes(bill_length_mm, bill_depth_mm))+geom_point(color="darkblue", size=100, shape=15)
 
 ```
 
@@ -261,8 +283,8 @@ We can make scatter plots using the argument `geom_point()`. We'll make a graph 
 **Inserting a regression line**
 We can include a regression line into our graph using `geom_smooth()`.
 ```{r}
-
-```
+ggplot(diamonds, aes(carat, price))+geom_point(color="lightblue", size=2, shape=4)+geom_smooth(method="lm", size=1, color="orange", linetype="dashed")
+``
 We can customize whether the regression line has a confidence interval surrounding it. You may be asking yourself **what confidence interval**. Carat and price are very highly correlated. let's use an mtcars example to see how we can change it. 
 w/ 95% confidence interval shaded
 ```{r}
@@ -271,24 +293,30 @@ w/ 95% confidence interval shaded
 **Changing scatterplots**
 you can change the outline of a dot using "color" 
 ```{r}
-
+library(ggplot2)
+ggplot(mtcars, aes(mpg, hp))+geom_point()+geom_smooth(method="lm")
+#add se=FALSE
+ggplot(diamonds, aes(carat, price, color=cut))+geom_point()
 ```
 
 ####Practice: 
 1. Create a scatter plot of the body mass and flipper length variables. 
 ```{r}
-
+ggplot(penguins, aes(body_mass_g, flipper_length_mm))+geom_point()
 ```
 2. Change the color of the points to your favorite color. 
 ```{r}
+ggplot(penguins, aes(body_mass_g, flipper_length_mm))+geom_point(color="lightblue")
 
 ```
 3. Change the shape of the points. 
 ```{r}
+ggplot(penguins, aes(body_mass_g, flipper_length_mm))+geom_point(color="red", shape=16)
 
 ```
 4. Add a line of best fit to your scatter plot. 
 ```{r}
+ggplot(penguins, aes(body_mass_g, flipper_length_mm))+geom_point(color="pink4", shape=16)+geom_smooth(method="lm", color="black", se=FALSE)
 
 ```
 
@@ -296,11 +324,12 @@ you can change the outline of a dot using "color"
 Line graphs follow a similar to scatterplots, but use the geom_line function. Color customizations follow the same rules as scatterplots. 
 include group in aes
 ```{r}
-
+data("ChickWeight")
+ggplot(ChickWeight, aes(Time, weight, group=Chick))+geom_line()
 ```
 
 ```{r}
-
+ggplot(ChickWeight, aes(Time, weight, group=Chick, color=Chick))+geom_line()
 ```
 #cyl
 ```{r}
@@ -312,16 +341,29 @@ I won't talk as much about these graphs, but happy to answer questions.
 **Box plots**
 I hope that the pattern is starting to make sense, but the only difference with a box plot is that you'll use `geom_boxplot()`. 
 ```{r}
-
+ggplot(diamonds, aes(color,price))+geom_boxplot()
 ```
 
 ```{r}
+ggplot(diamonds, aes(color,price))+geom_boxplot()
 
 ```
 
 ```{r twoVariableBoxplot}
+ggplot(diamonds, aes(color,price))+geom_boxplot(color="pink", fill="green")
+
+ggplot(mtcars, aes(as.factor(cyl), mpg))+geom_boxplot()+geom_jitter()
 
 ```
+##Violin Plot
+```{r}
+ggplot(diamonds, aes(color, price))+geom_violin()
+```
+
+#Best/Worst Graphs for Thursday
+
+```
+
 
 
 ### Practice: 
