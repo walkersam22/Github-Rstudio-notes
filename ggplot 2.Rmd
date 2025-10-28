@@ -1,0 +1,127 @@
+---
+title: "ggplot pt. 2"
+author: "Samantha Walker"
+date: "2025-10-28"
+output: html_document
+---
+
+# Learning Outcomes
+By the end of this class, students should be able to: 
+- Explain how to alter information in the legend 
+- Describe how to use facet wrap
+- Explain how to export graphs
+
+
+### Learning Outcome 1: Explain how to alter information in the legend
+It can also be helpful to understand how to modify your legend: 
+`+ theme(legend.position="none")` will remove the legend. You can also choose to move the legend to the top or bottom of the graph
+
+Let's try this on a graph from the diamonds dataset: 
+```{r}
+library(ggplot2)
+data(diamonds)
+ggplot(diamonds, aes(color, price, fill=cut))+geom_boxplot()
+```
+
+We can also change the location: 
+```{r}
+ggplot(diamonds, aes(color, price, fill=cut))+geom_boxplot()+theme(legend.position="bottom")
+#top, left, right, bottom, or none are the options
+
+```
+
+To Change the legend title, you can use a couple of different codes, depending on the type of data: 
+`scale_color_manual(name="Title")` works for scatter plots filled in with a factor
+`scale_fill_manual(name="Title)` should work for a bar graph filled in by a factor
+`scale_color_continuous()` and `scale_fill_continuous()` should work for a numeric fill
+```{r}
+ggplot(diamonds, aes(color, price, fill=cut))+geom_boxplot()+theme(legend.position="bottom")+scale_fill_manual(name="Cut of Diamonds", values=c("purple", "blue", "green", "orange", "red", "yellow", "pink")
+```
+
+### Practice:
+
+1) make a graph of bill length and bill depth. Include island as a third variable
+```{r}
+library(palmerpenguins)
+data("penguins")
+ggplot(penguins, aes(bill_len, bill_dep, fill=island))+geom_point()
+```
+
+2) Move the legend to the top of the graph
+```{r}
+ggplot(penguins, aes(bill_length_mm, bill_depth_mm, fill=island))+geom_point()+theme(legend.position = "top")
+```
+
+3) Remove the legend from the graph 
+```{r}
+ggplot(penguins, aes(bill_len, bill_dep, fill=island))+geom_point()+theme(legend.position = "none")
+
+```
+
+4) Change the title of the legend
+```{r}
+ggplot(penguins, aes(bill_length_mm, bill_depth_mm, color=island))+geom_point()+theme(legend.position = "top")+scale_fill_manual(name="Island", values=c("pink", "orange", "yellow"))
+
+```
+
+
+5) make a graph of bill length and bill depth. Include flipper length as a third variable
+```{r}
+ggplot(penguins, aes(bill_length_mm, bill_depth_mm, cut=flipper_length_mm))+geom_point()
+
+### Learning Outcome 2: Describe how to use facet wrap
+Facet Wrap allows us to incorporate a third variable in another way. Specifically, it panels graphs so that we can make an individual graph for each level of a factor.
+
+we need to make a graph and save it 
+```{r}
+data(diamonds)
+ggplot(diamonds, aes(color, price, color=cut))+geom_point()
+
+ggplot(diamonds, aes(color, price, color=cut))+geom_boxplot()+facet_wrap(~cut)
+
+ggplot(diamonds, aes(carat, price, color=cut))+geom_point()+geom_smooth(method="lm")+facet_wrap(~cut)
+
+ggplot(diamonds, aes(carat, price, color=cut))+geom_point()+geom_smooth(method="lm")+facet_wrap(~color)
+#creates a graph for each cut of diamond
+```
+
+### change labels on the axes
+change levels beforehand
+```{r}
+levels(penguins$species)<-c("Adelie Penguin", "Chinstrap Penguin", "Gentoo Penguin")
+
+ggplot(penguins, aes(bill_length_mm, bill_depth_mm))+geom_point()+facet_wrap(~species)
+```
+
+make a vector called labels. use `labeller=as_labeller())` in `facet_wrap()`
+```{r}
+speciesTitle<-c("Adelie Penguin"="Adelia", "Chinstrap Penguin" ="Chinstrap", "Gentoo Penguin"="Gentoo")
+ggplot(penguins, aes(bill_length_mm, bill_depth_mm))+geom_point()+facet_wrap(~species, labeller = as_labeller(speciesTitle))
+```
+
+### Practice: 
+1) create a facet wrap graph to generate a scatterplot of mpg and hp based on the number of cylinders a car has
+```{r}
+data("mtcars")
+cyl_title<-c("4"="4 cyl", "6"="6 cyl", "8"="8 cyl")
+ggplot(mtcars, aes(hp, mpg, color=cyl))+geom_point()+facet_wrap(~cyl, labeller = as_labeller(cyl_title))
+```
+
+### Learning Outcome 3: Explain how to export graphs
+to export graphs, I use the command `ggsave()`
+Specifically, you can use the following arguments: 
+`ggsave("name of graph", width, height, units, dpi)`
+```{r}
+SexLabels<-c("female"="FEMALE", "male"="MALE", "NA"="Unknown")
+ggplot(penguins, aes(bill_length_mm, bill_depth_mm, color=sex))+geom_point()+facet_wrap(~sex, labeller = as_labeller(SexLabels))+labs(title="Bill Length and Depth by Gender", x="Bill Length", y="Bill Depth")+theme(legend.position = "bottom")
+
+ggsave("FinalPrettyPenguinGraph.tiff", width=10, height=8, units="in", dpi=300)
+```
+I don't usually specify a path in ggsave, but make sure my r code is in the directory I'd like it to be saved in. you can check your working directory by using this code
+```{r}
+getwd()
+```
+you can change your working directory using this code: 
+```{r}
+setwd()
+```
