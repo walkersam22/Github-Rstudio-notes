@@ -121,6 +121,7 @@ People make shiny apps in different ways, I'm going to use naming conventions an
 
 But first, we need to load the shiny package. 
 ```{r}
+install.packages("shiny")
 library(shiny)
 ```
 
@@ -217,7 +218,7 @@ shinyApp(ui = ui, server = server)
 ui <- fluidPage(
   sliderInput(inputId = "number", 
     label = "Pick a number", 
-    value = 2500, min = 1, max = 5000))
+    value = 2500, min = 1, max = 37500))
 server <- function(input, output) {}
 
 shinyApp(ui = ui, server = server)
@@ -229,12 +230,12 @@ shinyApp(ui = ui, server = server)
 ui <- fluidPage(
   sliderInput(inputId = "number", 
     label = "Pick a number", 
-    value = 2500, min = 1, max = 5000), plotOutput("hist")
+    value = 25, min = 0, max = 100), plotOutput("hist")
 )
 
 server <- function(input, output) {
   output$hist <- renderPlot({
-    ggplot(, aes(rnorm(input$number)))+ geom_histogram(fill="midnightblue")+theme_classic()
+    ggplot(, aes(rnorm(input$number)))+ geom_histogram(fill="deeppink")+theme_classic()
   })
 }
 
