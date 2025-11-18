@@ -1,0 +1,137 @@
+---
+title: "Stats pt2"
+author: "Samantha Walker"
+date: "2025-11-18"
+output: html_document
+---
+
+### multiple regression 
+
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+data(penguins)
+```
+
+Regression
+```{r}
+colnames(penguins)
+lm1<- lm(body_mass_g~ bill_length_mm + bill_depth_mm, data=penguins)
+summary(lm1)
+
+lm2<- lm(body_mass_g~ bill_length_mm * bill_depth_mm, data=penguins)
+summary(lm2)
+```
+
+```{r}
+library(ggeffects)
+library(ggiraphExtra)#note: this contains ggpredict (with a capital p)
+#both graphs will provide the interaction, just in different ways 
+#ggPredict creates the graph I was envisioning, ggpredict provides separate graphs
+ggPredict(lm2, interactive=TRUE)
+a<- ggpredict(lm2)
+plot(a)
+ggplot(penguins, aes(bill_length_mm, body_mass_g, color= bill_depth_mm, group= bill_depth_mm))+geom_point()+ geom_smooth(method="lm")
+```
+
+### Weighting
+In regression, we sometimes assign sample weights to different categories. Usually, we do this because the level is being over or under sampled. We want the sample to represent the population, but it can't do that as well if we end up with too many or too few people with a characteristic. 
+
+One way that this is done is to use the average score for a specific group, rather than individual scores. In other words, make a summary table like you have before and use the average as the outcome and the group variables as they predictors. This isn't usually the best option because you lose a lot of variability (model may be too good of a fit)
+
+Another way is to use weights in the regression. Could do this by adding the `weights` argument to lm. Different ways to weight responses. One is to use sample size. You can create a column that includes group size and add it to the regression.
+
+```{r}
+penguinLm<-lm(flipper_length_mm~species, data=penguins)
+summary(penguinLm)
+```
+
+```{r}
+summary(as.factor(penguins$species))
+penguins$speciesSize[penguins$species=="Adelie"]<- 152
+penguins$speciesSize[penguins$species=="Chinstrap"]<- 68
+penguins$speciesSize[penguins$species=="Gentoo"]<- 124
+```
+
+```{r}
+penguinLm2<- lm(flipper_length_mm~species, weights=speciesSize , data=penguins)
+summary(penguinLm2)
+
+```
+
+
+### Validity Testing
+Validity testing has been used in many places, including regression and machine learning (also known as fancy regression). The base idea is to see how well your model fits data. This can be extended to looking at how well your model fits the data it was trained on versus how well it generalizes to a new dataset.
+
+It's done in different ways, so I won't spend too much time on it. Here's a link to a good R tutorial for assumption checking and validity checking in R (https://www.sthda.com/english/articles/39-regression-model-diagnostics/161-linear-regression-assumptions-and-diagnostics-in-r-essentials/)
+
+## Mediation and Moderation
+I'll give a brief intro, and here is an example from the counseling psychology world (https://christopherjwilson.github.io/intro_to_r/moderation.html) 
+
+### Moderation
+Moderation is the idea that a third variable affects the relationship between x and y. In terms of coding, the steps involve putting an interaction term in your regression
+
+```{r}
+penguinMod<- lm(body_mass_g ~ flipper_length_mm*bill_depth_mm, data=penguins)
+summary(penguinMod)
+#flipper length is going to influecne body mass and so will bill length, so we know that there is a moderator
+```
+
+If a moderation is significant, it can be followed up with a simple slopes analysis. This just means we'll be plotting the interaction. You could use the ggpredict I showed you previously or you could use the interact_plot function in the interactions library. 
+
+`interact_plot(linearmodel, pred = predictor, modx = moderator)`
+```{r}
+install.packages("interactions")
+library(interactions)
+interact_plot(penguinMod, pred="flipper_length_mm", modx="bill_depth_mm")
+#if there was no moderation, the lines would be stacked on each other. This is not the case, so we have a moderation. The slope that is the steepest is the one 1- SD. This means that as flipper length is increasing, that that group has the biggest change in body mass. The smallest slope is the one +1 SD, and it shows that the weakest interactions come when bill_depth is less than the mean. 
+```
+
+### Mediation 
+
+Mediation occurs when there is seemingly a relationship between x and y. In reality x predicts a mediator that in turn predicts y. This is often used when discussing mechanisms. There are different ways to do a mediation analysis. Baron and Kenny is a traditional approach, but has some issues. 
+
+Preacher and Hayes created a new approach that removes some of the issues with Baron and Kenny. This is shown in the mediator package. 
+need to create two models: 
+1) predict the mediator from x
+2) predict y from x and the mediator 
+
+These two models get plugged in to the `mediate()` function. 
+`mediate(lm1, lm2, treat="predictor", mediator= "mediator")`
+then, we take a summary
+x=bill length
+y=body mass
+mediator=bill depth
+```{r}
+mediatorX<-lm(bill_depth_mm ~ bill_length_mm, data=penguins)
+yfromMed<-lm(body_mass_g~bill_length_mm+ bill_depth_mm, data=penguins)
+
+install.packages("mediation")
+library(mediation)
+summary(mediate(mediatorX, yfromMed, treat="bill_length_mm", mediator="bill_depth_mm"))
+```
+
+Interpretation: 
+Total Effect: tells relationship between x and y (indirect and direct effect)
+ADE: tells about whether there is a direct effect between x and y
+ACME: tells use where the relationship is mediated 
+
+
+### Non linear models
+Nonlinear models in R can be really versatile and helpful for analyses. Mixed models have been recommended over repeated measures ANOVA (due to typically violating assumptions). The code isn't hard to learn, there's just a lot that goes into them. 
+
+Here's one resource to get started, and I'm happy to talk about applications with groups individually (https://stats.oarc.ucla.edu/other/mult-pkg/introduction-to-generalized-linear-mixed-models/)
+
+###Super Quick not really code version of nonlinear models
+```{r}
+glm()
+#glm stands for generalized linear model
+glm(outcome~predictor, data=dataset, family="binomal")
+#you can have different types of family depending on the type of data
+#binomial family: logistic regression where you have dichotomous output
+#poisson family, count data
+```
+
+### Repeated Measures ANOVA
+
+
